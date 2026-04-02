@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseServer } from "@/lib/aurik/supabaseServer";
 
 export async function POST(req: Request) {
   const apiKey = req.headers.get("x-api-key");
