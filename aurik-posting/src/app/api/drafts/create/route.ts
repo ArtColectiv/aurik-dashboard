@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseServer } from "@/lib/aurik/supabaseServer";
+import { supabaseServer } from "@/lib/supabase/server";
 
 function getMonthRange() {
   const now = new Date();
