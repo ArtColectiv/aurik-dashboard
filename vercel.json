@@ -1,1 +1,13 @@
-{}
+{
+  "nodeVersion": "20.x",
+  "crons": [
+    {
+      "path": "/api/cron/autonomy-tick",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/experiment-autonomy",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
