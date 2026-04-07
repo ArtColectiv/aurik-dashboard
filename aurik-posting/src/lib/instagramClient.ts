@@ -1,10 +1,15 @@
-// lib/aurik/actions/instagramClient.ts
+import * as crypto from "crypto";
 
 const DRY_RUN = process.env.INSTAGRAM_DRY_RUN === "true";
 const ACCESS_TOKEN = process.env.INSTAGRAM_ACCESS_TOKEN ?? "";
 const ACCOUNT_ID = process.env.INSTAGRAM_ACCOUNT_ID ?? "";
+const APP_SECRET = process.env.INSTAGRAM_APP_SECRET ?? "";
 
 const GRAPH_API = "https://graph.facebook.com/v19.0";
+
+function getAppSecretProof(token: string): string {
+  return crypto.createHmac("sha256", APP_SECRET).update(token).digest("hex");
+}
 
 export type InstagramPostResult = {
   ok: boolean;
@@ -28,8 +33,6 @@ export type InstagramImagePayload = {
   experimentKey?: string;
 };
 
-// ─── DRY RUN HELPERS ─────────────────────────────────────────
-
 function dryRunResult(label: string, payload: object): InstagramPostResult {
   console.log(`[INSTAGRAM DRY_RUN] ${label}`, JSON.stringify(payload, null, 2));
   return {
@@ -40,16 +43,17 @@ function dryRunResult(label: string, payload: object): InstagramPostResult {
   };
 }
 
-// ─── REAL API HELPERS ─────────────────────────────────────────
-
 async function createMediaContainer(params: {
   type: "REELS" | "IMAGE";
   url: string;
   caption: string;
 }): Promise<string> {
+  const appsecret_proof = getAppSecretProof(ACCESS_TOKEN);
+
   const body: Record<string, string> = {
     caption: params.caption,
     access_token: ACCESS_TOKEN,
+    appsecret_proof,
   };
 
   if (params.type === "REELS") {
@@ -82,9 +86,10 @@ async function waitForMediaReady(
   maxAttempts = 10,
   intervalMs = 3000
 ): Promise<void> {
+  const appsecret_proof = getAppSecretProof(ACCESS_TOKEN);
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(
-      `${GRAPH_API}/${mediaId}?fields=status_code&access_token=${ACCESS_TOKEN}`
+      `${GRAPH_API}/${mediaId}?fields=status_code&access_token=${ACCESS_TOKEN}&appsecret_proof=${appsecret_proof}`
     );
 
     const data = await res.json() as { status_code?: string };
@@ -101,12 +106,15 @@ async function waitForMediaReady(
 }
 
 async function publishMediaContainer(mediaId: string): Promise<string> {
+  const appsecret_proof = getAppSecretProof(ACCESS_TOKEN);
+
   const res = await fetch(`${GRAPH_API}/${ACCOUNT_ID}/media_publish`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       creation_id: mediaId,
       access_token: ACCESS_TOKEN,
+      appsecret_proof,
     }),
   });
 
@@ -120,8 +128,6 @@ async function publishMediaContainer(mediaId: string): Promise<string> {
 
   return data.id;
 }
-
-// ─── PUBLIC API ───────────────────────────────────────────────
 
 export async function postReelToInstagram(
   payload: InstagramReelPayload
