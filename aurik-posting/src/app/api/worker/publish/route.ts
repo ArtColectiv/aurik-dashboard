@@ -7,7 +7,7 @@ export async function POST() {
 
   const { data: jobs, error } = await supabase
     .from("posting_post_jobs")
-    .select("*")
+    .select("*, posting_post_drafts(*)")
     .eq("status", "queued")
     .limit(5);
 
@@ -17,10 +17,17 @@ export async function POST() {
   const results: any[] = [];
 
   for (const job of jobs) {
+    const draft = job.posting_post_drafts;
+
+    if (!draft?.media_url || !draft?.caption) {
+      results.push({ jobId: job.id, error: "Missing media_url or caption in draft" });
+      continue;
+    }
+
     const igResult = await postImageToInstagram({
-      imageUrl: job.image_url,
-      caption: job.caption,
-      agentName: job.agent_name ?? "aurik",
+      imageUrl: draft.media_url,
+      caption: draft.caption,
+      agentName: "aurik",
     });
 
     if (!igResult.ok) {
