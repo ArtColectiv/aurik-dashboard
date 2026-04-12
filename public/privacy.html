@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de confidentialité — Kompacktor</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: #fafaf8;
+      color: #1a1a18;
+      line-height: 1.75;
+      padding: 0 1rem;
+    }
+
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4rem 0 6rem;
+    }
+
+    .logo {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 3rem;
+    }
+
+    h1 {
+      font-family: 'Georgia', serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: normal;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+      color: #1a1a18;
+    }
+
+    .date {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 3rem;
+      font-family: 'Courier New', monospace;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e5e3de;
+      margin: 2.5rem 0;
+    }
+
+    h2 {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    p {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      padding-left: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    li {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 0.4rem;
+    }
+
+    a {
+      color: #1a1a18;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .contact-box {
+      background: #f0efe9;
+      border-radius: 4px;
+      padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .contact-box p {
+      margin: 0;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="logo">Kompacktor</div>
+
+    <h1>Politique de confidentialité</h1>
+    <div class="date">En vigueur depuis le 8 avril 2025</div>
+
+    <hr class="divider" />
+
+    <h2>1. Présentation</h2>
+    <p>
+      Kompacktor (<a href="https://kompacktor.com">kompacktor.com</a>) est un outil de gestion et de publication automatique de contenu sur Instagram. La présente politique décrit les données que nous collectons, leur utilisation et leur protection.
+    </p>
+
+    <h2>2. Données collectées</h2>
+    <p>Dans le cadre du fonctionnement de nos services, nous collectons et traitons :</p>
+    <ul>
+      <li>Les <strong>tokens d'accès Instagram</strong> nécessaires à la publication de contenu via l'API Meta.</li>
+      <li>Les <strong>identifiants de compte Instagram</strong> associés à l'application.</li>
+      <li>Les <strong>contenus à publier</strong> (textes, images, vidéos) transmis à l'outil pour planification et diffusion.</li>
+      <li>Les <strong>données de configuration</strong> techniques de l'application (paramètres, identifiants d'application Meta).</li>
+    </ul>
+
+    <h2>3. Utilisation des données</h2>
+    <p>Les données collectées sont utilisées exclusivement pour :</p>
+    <ul>
+      <li>Publier automatiquement du contenu sur le compte Instagram associé.</li>
+      <li>Gérer la planification et le suivi des publications.</li>
+      <li>Assurer le bon fonctionnement technique de l'application.</li>
+    </ul>
+    <p>Aucune donnée n'est vendue, cédée ou partagée avec des tiers à des fins commerciales ou publicitaires.</p>
+
+    <h2>4. Partage des données</h2>
+    <p>
+      Nous utilisons l'<strong>API Meta (Facebook / Instagram)</strong> pour la publication de contenu. L'utilisation de cette API est soumise aux <a href="https://developers.facebook.com/terms/" target="_blank" rel="noopener">Conditions d'utilisation de la plateforme Meta</a>.
+    </p>
+    <p>
+      Nous utilisons <strong>Vercel</strong> comme infrastructure d'hébergement. Les variables d'environnement (tokens, identifiants) sont stockées de manière sécurisée selon les pratiques de Vercel.
+    </p>
+    <p>Aucune autre transmission de données à des tiers n'est effectuée.</p>
+
+    <h2>5. Conservation des données</h2>
+    <p>
+      Les tokens d'accès Instagram sont conservés le temps nécessaire au fonctionnement du service et renouvelés périodiquement conformément aux exigences de l'API Meta. Les contenus publiés ne sont pas archivés au-delà de leur traitement.
+    </p>
+
+    <h2>6. Sécurité</h2>
+    <p>
+      Les données sensibles (tokens, identifiants) sont stockées sous forme de variables d'environnement chiffrées sur Vercel. Aucune donnée sensible n'est exposée publiquement dans le code source.
+    </p>
+
+    <h2>7. Vos droits</h2>
+    <p>
+      Conformément à la législation applicable en matière de protection des données personnelles (RGPD et Loi 25 au Québec), vous disposez des droits suivants :
+    </p>
+    <ul>
+      <li>Droit d'accès à vos données personnelles.</li>
+      <li>Droit de rectification ou de suppression.</li>
+      <li>Droit d'opposition au traitement.</li>
+      <li>Droit à la portabilité des données.</li>
+    </ul>
+    <p>Pour exercer ces droits, contactez-nous à l'adresse ci-dessous.</p>
+
+    <h2>8. Contact</h2>
+    <div class="contact-box">
+      <p>Pour toute question relative à cette politique de confidentialité :</p>
+      <p style="margin-top: 0.75rem;">
+        <strong>Kompacktor</strong><br />
+        <a href="mailto:contact@kompacktor.com">contact@kompacktor.com</a><br />
+        <a href="https://kompacktor.com">kompacktor.com</a>
+      </p>
+    </div>
+
+    <hr class="divider" />
+
+    <p style="font-size: 13px; color: #aaa; font-family: 'Courier New', monospace;">
+      Cette politique peut être mise à jour. Toute modification sera reflétée sur cette page avec une date de révision.
+    </p>
+
+  </div>
+</body>
+</html>
