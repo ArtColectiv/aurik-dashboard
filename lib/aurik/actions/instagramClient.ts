@@ -171,6 +171,8 @@ export async function postImageToInstagram(
       caption: payload.caption,
     });
 
+    await waitForMediaReady(mediaId);
+
     const postId = await publishMediaContainer(mediaId);
 
     return { ok: true, dryRun: false, mediaId, postId };

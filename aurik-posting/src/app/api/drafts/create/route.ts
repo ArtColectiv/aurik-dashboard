@@ -3,23 +3,53 @@ import { supabaseServer } from "@/lib/supabase/server";
 
 function getMonthRange() {
   const now = new Date();
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0));
+  const start = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0)
+  );
+  const end = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0)
+  );
   return { start: start.toISOString(), end: end.toISOString() };
 }
+
+type CreateDraftBody = {
+  channelConnectionId?: string;
+  title?: string | null;
+  caption?: string;
+  mediaUrl?: string | null;
+  mediaType?: string | null;
+  platform?: string;
+  agentName?: string | null;
+};
 
 export async function POST(req: Request) {
   try {
     const apiKey = req.headers.get("x-api-key");
+
     if (apiKey !== process.env.AURIK_API_KEY) {
-      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    const body = await req.json();
-    const { channelConnectionId, title, caption, mediaUrl, mediaType, platform } = body;
+    const body = (await req.json()) as CreateDraftBody;
+
+    const {
+      channelConnectionId,
+      title,
+      caption,
+      mediaUrl,
+      mediaType,
+      platform,
+      agentName,
+    } = body;
 
     if (!channelConnectionId || !caption || !platform) {
-      return NextResponse.json({ ok: false, error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     const supabase = supabaseServer();
@@ -31,7 +61,10 @@ export async function POST(req: Request) {
       .single();
 
     if (connectionError || !connection) {
-      return NextResponse.json({ ok: false, error: "Invalid connection" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Invalid connection" },
+        { status: 400 }
+      );
     }
 
     const userId = connection.user_id as string;
@@ -43,7 +76,10 @@ export async function POST(req: Request) {
       .single();
 
     if (postingUserError || !postingUser) {
-      return NextResponse.json({ ok: false, error: "Posting user not found" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Posting user not found" },
+        { status: 400 }
+      );
     }
 
     const { data: plan, error: planError } = await supabase
@@ -53,7 +89,10 @@ export async function POST(req: Request) {
       .single();
 
     if (planError || !plan) {
-      return NextResponse.json({ ok: false, error: "Plan not found" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "Plan not found" },
+        { status: 400 }
+      );
     }
 
     const { start, end } = getMonthRange();
@@ -67,14 +106,28 @@ export async function POST(req: Request) {
       .lt("created_at", end);
 
     if (usageError) {
-      return NextResponse.json({ ok: false, error: usageError.message }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: usageError.message },
+        { status: 500 }
+      );
     }
 
-    const monthlyUsage = (usageRows ?? []).reduce((sum, row) => sum + (row.event_count ?? 0), 0);
+    const monthlyUsage = (usageRows ?? []).reduce(
+      (sum, row) => sum + (row.event_count ?? 0),
+      0
+    );
 
     if (monthlyUsage >= plan.monthly_limit) {
-      return NextResponse.json({ ok: false, error: "Monthly plan limit reached" }, { status: 403 });
+      return NextResponse.json(
+        { ok: false, error: "Monthly plan limit reached" },
+        { status: 403 }
+      );
     }
+
+    const metadata = {
+      source: "aurik",
+      agent_name: agentName?.trim() || null,
+    };
 
     const { data: draft, error: draftError } = await supabase
       .from("posting_post_drafts")
@@ -87,13 +140,16 @@ export async function POST(req: Request) {
         media_type: mediaType ?? "image",
         platform,
         status: "draft",
-        metadata: { source: "aurik" },
+        metadata,
       })
       .select()
       .single();
 
     if (draftError || !draft) {
-      return NextResponse.json({ ok: false, error: draftError?.message ?? "Draft creation failed" }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: draftError?.message ?? "Draft creation failed" },
+        { status: 500 }
+      );
     }
 
     const { data: job, error: jobError } = await supabase
@@ -109,7 +165,10 @@ export async function POST(req: Request) {
       .single();
 
     if (jobError || !job) {
-      return NextResponse.json({ ok: false, error: jobError?.message ?? "Job creation failed" }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: jobError?.message ?? "Job creation failed" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
@@ -117,8 +176,12 @@ export async function POST(req: Request) {
       message: "Draft and job created",
       draftId: draft.id,
       jobId: job.id,
+      agentName: metadata.agent_name,
     });
   } catch {
-    return NextResponse.json({ ok: false, error: "Unexpected error" }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "Unexpected error" },
+      { status: 500 }
+    );
   }
 }

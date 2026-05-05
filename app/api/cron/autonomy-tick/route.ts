@@ -31,7 +31,7 @@ export async function GET(req: Request) {
   const startedAt = Date.now();
 
   const authHeader = req.headers.get("authorization");
-  const expectedSecret = process.env.AURIK_CRON_SECRET;
+  const expectedSecret = process.env.CRON_SECRET;
 
   if (!expectedSecret) {
     return NextResponse.json(

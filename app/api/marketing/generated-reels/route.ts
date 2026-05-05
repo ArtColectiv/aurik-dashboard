@@ -30,7 +30,7 @@ export async function GET(req: Request) {
     const supabase = supabaseServer();
 
     let resolvedAgentId: string | null = agentIdParam;
-    let resolvedAgentName: string | null = null;
+    let resolvedAgentName: string | null = agentNameParam;
 
     if (resolvedAgentId) {
       const { data: agentRow, error: agentErr } = await supabase
@@ -88,9 +88,9 @@ export async function GET(req: Request) {
       resolvedAgentName = agentRow.agent_name.trim();
     }
 
-    if (!resolvedAgentId) {
+    if (!resolvedAgentId || !resolvedAgentName) {
       return NextResponse.json(
-        { ok: false, error: "Impossible de résoudre agent_id." },
+        { ok: false, error: "Impossible de résoudre l'agent." },
         { status: 400 }
       );
     }
@@ -118,7 +118,9 @@ export async function GET(req: Request) {
           "error_message",
         ].join(",")
       )
-      .eq("agent_id", resolvedAgentId)
+      .or(
+        `agent_id.eq.${resolvedAgentId},agent_name.eq.${resolvedAgentName}`
+      )
       .order("created_at", { ascending: false })
       .order("id", { ascending: false });
 
