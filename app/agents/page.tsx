@@ -338,7 +338,7 @@ export default async function AgentsPage() {
         {/* Panneau création auto + console de tâches */}
         <section className="space-y-6">
           <CreateAutoAgentPanel />
-          <AgentTaskConsole agents={agents} />
+          <AgentTaskConsole agentId={agents[0]?.id} />
         </section>
       </main>
     </div>
