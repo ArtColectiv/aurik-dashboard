@@ -1,8 +1,14 @@
 {
   "crons": [
     {
-      "path": "/api/cron/autonomy-tick",
+      "path": "/api/cron/experiment-autonomy",
       "schedule": "0 * * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/marketing/generate-reel-video/route.ts": {
+      "maxDuration": 300,
+      "excludeFiles": ".tmp/**"
+    }
+  }
 }
