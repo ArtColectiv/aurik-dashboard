@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
@@ -21,7 +22,7 @@ import { renderReelFromHybridMp4, type HybridSceneInput } from "@/lib/aurik/reel
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 180;
+export const maxDuration = 300;
 
 type SupabaseServerClient = ReturnType<typeof supabaseServer>;
 
