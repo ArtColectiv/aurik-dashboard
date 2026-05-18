@@ -93,7 +93,9 @@ export async function GET(req: Request) {
           agentName: agent.agent_name,
           ok: res.ok,
           status: res.status,
-          error: res.ok ? undefined : (body as { error?: string }).error,
+          error: res.ok
+  ? undefined
+  : JSON.stringify(body),
         });
       } catch (err) {
         results.push({
