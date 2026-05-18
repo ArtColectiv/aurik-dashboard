@@ -1,15 +1,11 @@
 // app/api/cron/autonomy-tick/route.ts
-//
-// Cron Vercel — exécuté toutes les heures.
-// Récupère tous les agents actifs et déclenche un autonomy-tick pour chacun
-// en appelant POST /api/internal/autonomy-tick.
-//
-// Auth : header "Authorization: Bearer $AURIK_CRON_SECRET"
 
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/aurik/supabaseServer";
 import { DB } from "@/lib/aurik/db";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const ECOSYSTEM_ID = "default";
@@ -24,6 +20,7 @@ type TickResult = {
   agentName: string;
   ok: boolean;
   status?: number;
+  response?: unknown;
   error?: string;
 };
 
@@ -58,18 +55,20 @@ export async function GET(req: Request) {
 
     if (error) {
       return NextResponse.json(
-        { ok: false, error: "Failed to fetch agents", details: error.message },
+        {
+          ok: false,
+          error: "Failed to fetch agents",
+          details: error.message,
+        },
         { status: 500 }
       );
     }
 
     const agents = (agentsRaw ?? []) as AgentRow[];
 
-    // Construit l'URL de base à partir de l'env Vercel ou de la requête entrante
-    const baseUrl =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : new URL(req.url).origin;
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : new URL(req.url).origin;
 
     const tickUrl = `${baseUrl}/api/internal/autonomy-tick`;
 
@@ -81,21 +80,24 @@ export async function GET(req: Request) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${expectedSecret}`,
           },
-          body: JSON.stringify({ agentId: agent.id }),
+          body: JSON.stringify({
+            agentId: agent.id,
+            agentName: agent.agent_name,
+            maxPerDay: 10,
+          }),
+          cache: "no-store",
         });
 
-        const body = await res.json().catch(() => ({}));
+        const body = await res.json().catch(() => null);
 
         results.push({
           agentId: agent.id,
           agentName: agent.agent_name,
           ok: res.ok,
           status: res.status,
-          error: res.ok
-  ? undefined
-  : JSON.stringify(body),
+          response: body,
+          error: res.ok ? undefined : JSON.stringify(body),
         });
       } catch (err) {
         results.push({
@@ -121,23 +123,27 @@ export async function GET(req: Request) {
     };
 
     await supabase.from("agent_events").insert({
+      ecosystem_id: ECOSYSTEM_ID,
       agent_name: "autonomy-cron-tick",
       event_type: "autonomy_tick_cron_cycle",
       payload: summaryPayload,
     });
 
     return NextResponse.json({
-  ok: true,
-  mode: "cron",
-  agentsChecked: agents.length,
-  succeeded,
-  failed,
-  durationMs,
-  results,
-});
+      ok: true,
+      mode: "cron",
+      agentsChecked: agents.length,
+      succeeded,
+      failed,
+      durationMs,
+      results,
+    });
   } catch (err) {
     return NextResponse.json(
-      { ok: false, error: err instanceof Error ? err.message : "Unhandled error" },
+      {
+        ok: false,
+        error: err instanceof Error ? err.message : "Unhandled error",
+      },
       { status: 500 }
     );
   }
