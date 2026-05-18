@@ -127,13 +127,14 @@ export async function GET(req: Request) {
     });
 
     return NextResponse.json({
-      ok: true,
-      mode: "cron",
-      agentsChecked: agents.length,
-      succeeded,
-      failed,
-      durationMs,
-    });
+  ok: true,
+  mode: "cron",
+  agentsChecked: agents.length,
+  succeeded,
+  failed,
+  durationMs,
+  results,
+});
   } catch (err) {
     return NextResponse.json(
       { ok: false, error: err instanceof Error ? err.message : "Unhandled error" },
