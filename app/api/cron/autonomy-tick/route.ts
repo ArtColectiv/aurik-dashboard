@@ -79,8 +79,9 @@ export async function GET(req: Request) {
         const res = await fetch(tickUrl, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
-          },
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${expectedSecret}`,
+},
           body: JSON.stringify({
             agentId: agent.id,
             agentName: agent.agent_name,
