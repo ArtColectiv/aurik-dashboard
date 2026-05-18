@@ -10,8 +10,6 @@ import { getPostingWindowDecision } from "@/lib/aurik/posting/getPostingWindowDe
 import { fetchInstagramMediaInsights } from "@/lib/aurik/instagram/fetchInstagramMediaInsights";
 import { updateDelayedInstagramPerformance } from "@/lib/aurik/instagram/updateDelayedInstagramPerformance";
 
-// AJOUTE CETTE FONCTION EN HAUT (après imports)
-
 async function pickCopyVariants(agentId: string) {
   const supabase = supabaseServer();
 
@@ -721,7 +719,10 @@ const {
                   "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg",
                 mediaType: "image",
                 platform: "instagram",
-                agentName,
+                agentName: agentName.trim(),
+                agentId,
+                agent_id: agentId,
+                agent_name: agentName.trim(),
               }),
               cache: "no-store",
             },
